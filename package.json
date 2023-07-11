@@ -1,0 +1,24 @@
+{
+  "name": "zoomdrive",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "prepare": "ncc build index.js -o dist --source-map --license licenses.txt"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/coronasafe/zoomdrive.git"
+  },
+  "bugs": {
+    "url": "https://github.com/coronasafe/zoomdrive/issues"
+  },
+  "homepage": "https://github.com/coronasafe/zoomdrive#readme",
+  "dependencies": {
+    "@actions/core": "^1.10.0",
+    "@actions/github": "^5.1.1"
+  }
+}

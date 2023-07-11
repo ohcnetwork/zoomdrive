@@ -1,0 +1,34 @@
+on:
+  push:
+    branches:
+      - main
+  schedule:
+    - cron: "0 0 * * *" # Run every day at 00:00 UTC
+  workflow_dispatch:
+    inputs:
+      days-to-keep:
+        description: "Number of days to keep recordings"
+        required: true
+        default: 30
+      delete-on-success:
+        description: "Delete recordings after uploading to Google Drive"
+        required: true
+        default: false
+
+jobs:
+  zoomdrive:
+    runs-on: ubuntu-latest
+    name: Download Zoom recordings and upload to Google Drive
+    steps:
+      - name: Download ⬇ Zoom recordings and upload ⬆ to Google Drive
+        id: zoomdrive
+        uses: coronasafe/zoomdrive@main
+        with:
+          zoom-account-id: ${{ secrets.ZOOM_ACCOUNT_ID }}
+          zoom-client-id: ${{ secrets.ZOOM_CLIENT_ID }}
+          zoom-client-secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
+          days-to-keep: ${{ github.event.inputs.days-to-keep }}
+          delete-on-success: ${{ github.event.inputs.delete-on-success }}
+
+      - name: Summary
+        run: echo "The time was ${{ steps.zoomdrive.outputs.time }}"

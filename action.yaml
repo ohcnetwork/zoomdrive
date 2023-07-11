@@ -1,0 +1,42 @@
+name: A
+description: GitHub action to download Zoom recordings periodically and upload to Google Drive
+
+inputs:
+  zoom-account-id:
+    description: Zoom Account ID
+    required: true
+
+  zoom-client-id:
+    description: Client ID of Zoom OAuth App
+    required: true
+
+  zoom-client-secret:
+    description: Client Secret of Zoom OAuth App
+    required: true
+
+  zoom-user-id:
+    description: Zoom User ID
+    required: false
+    default: me
+
+  meeting-id:
+    description: Zoom Meeting ID
+    required: false
+
+  days-to-keep:
+    description: Number of days to keep Zoom files
+    required: false
+    default: "1"
+
+  delete-on-success:
+    description: Delete Zoom files after uploading to Google Drive
+    required: false
+    default: "false"
+
+outputs:
+  result:
+    description: The result of the action
+
+runs:
+  using: node16
+  main: dist/index.js
