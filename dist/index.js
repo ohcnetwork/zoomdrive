@@ -13116,7 +13116,7 @@ const ZOOM_API_SERVER = "https://api.zoom.us/v2";
 
 const authenticate = async (account_id, client_id, client_secret) => {
   const credentials = Buffer.from(`${client_id}:${client_secret}`);
-  const res = await axios.get(
+  const res = await axios.post(
     "https://zoom.us/oauth/token?grant_type=account_credentials",
     {
       headers: {
