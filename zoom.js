@@ -1,7 +1,6 @@
 const fs = require("fs");
 const { convertTZ, titleCase } = require("./utils");
 const ZOOM_API_SERVER = "https://api.zoom.us/v2";
-const { Headers, FormData } = require("node-fetch");
 
 const getAccessToken = async (account_id, client_id, client_secret) => {
   const headers = new Headers();
