@@ -13905,16 +13905,16 @@ module.exports = {
 const fs = __nccwpck_require__(7147);
 const { convertTZ, titleCase } = __nccwpck_require__(8806);
 const ZOOM_API_SERVER = "https://api.zoom.us/v2";
-const fetch = __nccwpck_require__(2757);
+const { Headers, FormData } = __nccwpck_require__(2757);
 
 const getAccessToken = async (account_id, client_id, client_secret) => {
-  const headers = new fetch.Headers();
+  const headers = new Headers();
   headers.append(
     "Authorization",
     `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString("base64")}`
   );
 
-  const body = new fetch.FormData();
+  const body = new FormData();
   body.append("account_id", account_id);
 
   const response = await fetch(
@@ -13935,7 +13935,7 @@ const getAccessToken = async (account_id, client_id, client_secret) => {
 };
 
 const getHeaders = (access_token) => {
-  const headers = new fetch.Headers();
+  const headers = new Headers();
   headers.append("Authorization", `Bearer ${access_token}`);
   return headers;
 };

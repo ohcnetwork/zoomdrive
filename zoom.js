@@ -1,16 +1,16 @@
 const fs = require("fs");
 const { convertTZ, titleCase } = require("./utils");
 const ZOOM_API_SERVER = "https://api.zoom.us/v2";
-const fetch = require("node-fetch");
+const { Headers, FormData } = require("node-fetch");
 
 const getAccessToken = async (account_id, client_id, client_secret) => {
-  const headers = new fetch.Headers();
+  const headers = new Headers();
   headers.append(
     "Authorization",
     `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString("base64")}`
   );
 
-  const body = new fetch.FormData();
+  const body = new FormData();
   body.append("account_id", account_id);
 
   const response = await fetch(
@@ -31,7 +31,7 @@ const getAccessToken = async (account_id, client_id, client_secret) => {
 };
 
 const getHeaders = (access_token) => {
-  const headers = new fetch.Headers();
+  const headers = new Headers();
   headers.append("Authorization", `Bearer ${access_token}`);
   return headers;
 };
