@@ -1,28 +1,23 @@
 const fs = require("fs");
 const { convertTZ, titleCase } = require("./utils");
+const qs = require("qs");
 const axios = require("axios").default;
 
 const ZOOM_API_SERVER = "https://api.zoom.us/v2";
 
 const authenticate = async (account_id, client_id, client_secret) => {
   const credentials = Buffer.from(`${client_id}:${client_secret}`);
+
   const res = await axios.post(
     "https://zoom.us/oauth/token?grant_type=account_credentials",
+    qs.stringify({ account_id }),
     {
       headers: {
         Authorization: `Basic ${credentials.toString("base64")}`,
-        "Content-Type": "application/json",
-      },
-      data: {
-        account_id,
+        "Content-Type": "application/x-www-form-urlencoded",
       },
     }
   );
-
-  if (res.status !== 200) {
-    throw new Error(res.data);
-  }
-
   return res.data.access_token;
 };
 
@@ -38,11 +33,6 @@ const getRecordings = async (access_token, user_id, from) => {
     `${ZOOM_API_SERVER}/users/${user_id}/recordings?page_size=100&from=${from}`,
     { headers: getHeaders(access_token) }
   );
-
-  if (res.status !== 200) {
-    throw new Error(res.data);
-  }
-
   return res.data;
 };
 
