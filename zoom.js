@@ -1,55 +1,49 @@
 const fs = require("fs");
 const { convertTZ, titleCase } = require("./utils");
+const axios = require("axios").default;
+
 const ZOOM_API_SERVER = "https://api.zoom.us/v2";
 
-const getAccessToken = async (account_id, client_id, client_secret) => {
-  const headers = new Headers();
-  headers.append(
-    "Authorization",
-    `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString("base64")}`
-  );
-
-  const body = new FormData();
-  body.append("account_id", account_id);
-
-  const response = await fetch(
+const authenticate = async (account_id, client_id, client_secret) => {
+  const credentials = Buffer.from(`${client_id}:${client_secret}`);
+  const res = await axios.get(
     "https://zoom.us/oauth/token?grant_type=account_credentials",
     {
-      method: "POST",
-      headers,
-      body,
+      headers: {
+        Authorization: `Basic ${credentials.toString("base64")}`,
+        "Content-Type": "application/json",
+      },
+      data: {
+        account_id,
+      },
     }
   );
 
-  if (response.status !== 200) {
-    throw new Error(await response.text());
+  if (res.status !== 200) {
+    throw new Error(res.data);
   }
 
-  const json = await response.json();
-  return json;
+  return res.data.access_token;
 };
 
 const getHeaders = (access_token) => {
-  const headers = new Headers();
-  headers.append("Authorization", `Bearer ${access_token}`);
-  return headers;
+  return {
+    Authorization: `Bearer ${access_token}`,
+    "Content-Type": "application/json",
+  };
 };
 
 const getRecordings = async (access_token, user_id, from) => {
-  const response = await fetch(
+  const res = await axios.get(
     `${ZOOM_API_SERVER}/users/${user_id}/recordings?page_size=100&from=${from}`,
-    {
-      method: "GET",
-      headers: getHeaders(access_token),
-    }
+    { headers: getHeaders(access_token) }
   );
 
-  if (response.status !== 200) {
-    throw new Error(await response.text());
+  if (res.status !== 200) {
+    throw new Error(res.data);
   }
 
-  const json = await response.json();
-  return json;
+  return res.data;
 };
 
 const getRecordingFileName = (recording, meeting) => {
@@ -85,17 +79,16 @@ const downloadMeeting = async (access_token, meeting) => {
     const { download_url, file_size } = recording_files[i];
     const path = filePaths[i];
 
-    const file = fs.createWriteStream(path);
-
-    const response = await fetch(download_url, {
+    const res = await axios.get(download_url, {
       method: "GET",
+      responseType: "stream",
       headers,
     });
 
-    response.body.pipe(file);
+    res.data.pipe(fs.createWriteStream(path));
 
     let progress = 0;
-    response.body.on("data", (chunk) => {
+    res.data.on("data", (chunk) => {
       progress += chunk.length;
       totalProgress += chunk.length;
       const percent = ((progress * 100) / file_size).toFixed();
@@ -154,7 +147,7 @@ const downloadMeeting = async (access_token, meeting) => {
 };
 
 module.exports = {
-  getAccessToken,
+  authenticate,
   getRecordings,
   downloadMeeting,
 };

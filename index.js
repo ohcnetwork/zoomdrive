@@ -3,16 +3,12 @@ const github = require("@actions/github");
 const zoom = require("./zoom");
 
 async function downloadRecordings() {
-  const accountId = core.getInput("zoom-account-id");
-  const clientId = core.getInput("zoom-client-id");
+  const account = core.getInput("zoom-account-id");
+  const client = core.getInput("zoom-client-id");
   const clientSecret = core.getInput("zoom-client-secret");
 
   core.info("Obtaining Zoom access token using OAuth");
-  const accessToken = await zoom.getAccessToken(
-    accountId,
-    clientId,
-    clientSecret
-  );
+  const accessToken = await zoom.authenticate(account, client, clientSecret);
 
   const daysToKeep = Number(core.getInput("days-to-keep"));
 
