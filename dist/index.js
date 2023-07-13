@@ -13914,7 +13914,7 @@ const getAccessToken = async (account_id, client_id, client_secret) => {
     `Basic ${Buffer.from(`${client_id}:${client_secret}`).toString("base64")}`
   );
 
-  const body = new FormData();
+  const body = new fetch.FormData();
   body.append("account_id", account_id);
 
   const response = await fetch(
