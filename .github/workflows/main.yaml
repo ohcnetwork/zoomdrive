@@ -18,6 +18,7 @@ on:
 jobs:
   zoomdrive:
     runs-on: ubuntu-latest
+    environment: Open Healthcare Network
     name: Download Zoom recordings and upload to Google Drive
     steps:
       - name: Download ⬇ Zoom recordings and upload ⬆ to Google Drive
