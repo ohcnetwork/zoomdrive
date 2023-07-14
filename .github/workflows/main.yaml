@@ -6,10 +6,13 @@ on:
     - cron: "0 0 * * *" # Run every day at 00:00 UTC
   workflow_dispatch:
     inputs:
-      days-to-keep:
-        description: "Number of days to keep recordings"
-        required: true
-        default: 30
+      lookback-days:
+        description: Number of days to keep Zoom meeting recordings
+        required: false
+        default: 7
+      end-date:
+        description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
+        required: false
       delete-on-success:
         description: "Delete recordings after uploading to Google Drive"
         required: true
@@ -28,7 +31,8 @@ jobs:
           zoom-account-id: ${{ secrets.ZOOM_ACCOUNT_ID }}
           zoom-client-id: ${{ secrets.ZOOM_CLIENT_ID }}
           zoom-client-secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
-          days-to-keep: ${{ github.event.inputs.days-to-keep }}
+          lookback-days: ${{ github.event.inputs.lookback-days }}
+          end-date: ${{ github.event.inputs.end-date }}
           delete-on-success: ${{ github.event.inputs.delete-on-success }}
 
       - name: Summary

@@ -1,4 +1,4 @@
-name: A
+name: zoomdrive
 description: GitHub action to download Zoom recordings periodically and upload to Google Drive
 
 inputs:
@@ -23,10 +23,14 @@ inputs:
     description: Zoom Meeting ID
     required: false
 
-  days-to-keep:
-    description: Number of days to keep Zoom files
+  lookback-days:
+    description: Number of days to keep Zoom meeting recordings
     required: false
-    default: "1"
+    default: "7"
+
+  end-date:
+    description: End date of Zoom meeting recordings to keep
+    required: false
 
   delete-on-success:
     description: Delete Zoom files after uploading to Google Drive
