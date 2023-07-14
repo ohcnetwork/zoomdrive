@@ -117,7 +117,7 @@ const downloadMeeetings = async (meetings) => {
       // 16% of 14.4 MB- Downloading 1/2 "Weekly Sync Meeting/2023-06-16/10-00-00 GMT-0700 (Pacific Daylight Time) - Audio Only.m4a" (32% of 7.2 MB)
       const newLog = `${totalPercent}% of ${prettyFileSize(
         total_size
-      )}- Downloading ${i + 1}/${
+      )} - Downloading ${i + 1}/${
         files.length
       } "${path}" (${percent}% of ${prettyFileSize(size)})`;
 

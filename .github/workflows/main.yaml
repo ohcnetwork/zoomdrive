@@ -13,6 +13,7 @@ on:
       end-date:
         description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
         required: false
+        default: "2023-06-28"
       delete-on-success:
         description: "Delete recordings after uploading to Google Drive"
         required: true
@@ -24,7 +25,7 @@ jobs:
     environment: Open Healthcare Network
     name: Download Zoom recordings and upload to Google Drive
     steps:
-      - name: Download ⬇ Zoom recordings and upload ⬆ to Google Drive
+      - name: ⬇ Download Meetings from Zoom Cloud
         id: zoomdrive
         uses: coronasafe/zoomdrive@main
         with:
@@ -35,5 +36,11 @@ jobs:
           end-date: ${{ github.event.inputs.end-date }}
           delete-on-success: ${{ github.event.inputs.delete-on-success }}
 
-      - name: Summary
-        run: echo "The time was ${{ steps.zoomdrive.outputs.time }}"
+      - name: ⬆ Upload Meetings to Google Drive
+        uses: adityak74/google-drive-upload-git-action@v0.3
+        with:
+          credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
+          filename: downloads
+          folderId: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          overwrite: true
+          mirrorDirectoryStructure: true
