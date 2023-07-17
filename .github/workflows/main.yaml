@@ -4,20 +4,20 @@ on:
       - main
   schedule:
     - cron: "0 0 * * *" # Run every day at 00:00 UTC
-  workflow_dispatch:
-    inputs:
-      lookback-days:
-        description: Number of days to keep Zoom meeting recordings
-        required: false
-        default: 7
-      end-date:
-        description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
-        required: false
-        default: "2023-06-28"
-      delete-on-success:
-        description: "Delete recordings after uploading to Google Drive"
-        required: true
-        default: false
+  # workflow_dispatch:
+  #   inputs:
+  #     lookback-days:
+  #       description: Number of days to keep Zoom meeting recordings
+  #       required: false
+  #       default: 7
+  #     end-date:
+  #       description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
+  #       required: false
+  #       default: "2023-06-28"
+  #     delete-on-success:
+  #       description: "Delete recordings after uploading to Google Drive"
+  #       required: true
+  #       default: false
 
 jobs:
   zoomdrive:
@@ -32,11 +32,15 @@ jobs:
           zoom-account-id: ${{ secrets.ZOOM_ACCOUNT_ID }}
           zoom-client-id: ${{ secrets.ZOOM_CLIENT_ID }}
           zoom-client-secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
-          lookback-days: ${{ github.event.inputs.lookback-days }}
-          end-date: ${{ github.event.inputs.end-date }}
-          delete-on-success: ${{ github.event.inputs.delete-on-success }}
+
+          # lookback-days: ${{ github.event.inputs.lookback-days }}
+          # end-date: ${{ github.event.inputs.end-date }}
+          # delete-on-success: ${{ github.event.inputs.delete-on-success }}
+
+          lookback-days: 7
+          end-date: "2023-06-28"
+
           gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          gdrive-folder-id: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
           meeting-folder-map: |
             {
               "83105532335": "1a2b3c4d5e6f7g8h9i0j",

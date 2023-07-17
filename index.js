@@ -1,6 +1,8 @@
 const core = require("@actions/core");
 const zoom = require("./zoom");
+const gdrive = require("./gdrive");
 const { google } = require("googleapis");
+const { prettyFileSize, progressBar } = require("./utils");
 
 function getDateRange() {
   const lookbackDays = Number(core.getInput("lookback-days") || 7);
@@ -21,58 +23,45 @@ async function downloadRecordings() {
   const clientSecret = core.getInput("zoom-client-secret");
   const [from, to] = getDateRange();
 
-  core.info("Authenticating with Zoom using OAuth");
+  zoom.log("Authenticating using OAuth");
   await zoom.authenticate(account, client, clientSecret);
 
-  core.info(`Obtaining Zoom Meetings and Recordings between ${from} and ${to}`);
+  zoom.log(`Obtaining Meetings and Recordings between '${from}' and '${to}'`);
   const { meetings } = await zoom.getRecordings("me", from, to);
 
-  const files = await zoom.downloadMeeetings(meetings);
-  core.info(`Downloaded ${files.length} files`);
+  const [files, total_size] = await zoom.downloadMeeetings(meetings);
+  zoom.log(
+    `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(
+      total_size
+    )}`
+  );
 
-  return files;
+  return [files, total_size];
 }
 
-async function uploadToGoogleDrive(files) {
-  const credentials = core.getInput("gsa-credentials");
-  const folderId = core.getInput("folder-id");
+async function syncToGoogleDrive(files, total_size) {
+  const credentials = Buffer.from(
+    core.getInput("gsa-credentials"),
+    "base64"
+  ).toString("utf-8");
 
+  const folderMap = JSON.parse(core.getInput("meeting-folder-map"));
+
+  gdrive.log("Authenticating using Google Service Account Credentials");
   const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(credentials),
     scopes: ["https://www.googleapis.com/auth/drive"],
   });
 
   const drive = google.drive({ version: "v3", auth });
-
-  const promises = files.map((file) => {
-    const name = file.split("/").pop();
-    const media = {
-      mimeType: "application/octet-stream",
-      body: require("fs").createReadStream(file),
-    };
-
-    return drive.files.create({
-      requestBody: {
-        name,
-        parents: [folderId],
-      },
-      media,
-      fields: "id",
-    });
-  });
-
-  const results = await Promise.all(promises);
-  const ids = results.map((result) => result.data.id);
-
-  core.info(`Uploaded ${ids.length} files to Google Drive`);
-
-  return ids;
+  return await gdrive.syncToGoogleDrive(drive, files, total_size, folderMap);
 }
 
 async function run() {
   try {
-    const files = await downloadRecordings();
-    await uploadToGoogleDrive(files);
+    const [files, total_size] = await downloadRecordings();
+    await syncToGoogleDrive(files, total_size);
+
     core.setOutput("recordings", files);
   } catch (error) {
     core.setFailed(error.message);
