@@ -45,9 +45,6 @@ async function syncToGoogleDrive(files, total_size) {
     "base64"
   ).toString("utf-8");
 
-  console.log(credentials);
-  console.log("JSON Parse: ", JSON.parse(credentials));
-
   const folderMap = JSON.parse(core.getInput("meeting-gdrive-folder-map"));
 
   gdrive.log("Authenticating using Google Service Account Credentials");

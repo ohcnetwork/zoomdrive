@@ -44,5 +44,5 @@ jobs:
           meeting-gdrive-folder-map: |
             {
               "83105532335": "1a2b3c4d5e6f7g8h9i0j",
-              "default": "1a2b3c4d5e6f7g8h9i0j
+              "default": "1a2b3c4d5e6f7g8h9i0j"
             }
