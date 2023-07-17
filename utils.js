@@ -38,8 +38,26 @@ const prettyFileSize = (bytes) => {
   );
 };
 
+/**
+ * Print a progress bar
+ *
+ * Eg: for 50% progress, it will print:
+ * ```
+ * [====================>               ] 50%
+ */
+const progressBar = (progress) => {
+  const barLength = 20;
+  const percent = (progress * 100).toFixed(0);
+  const bar = "=".repeat(Math.floor(progress * barLength));
+  const space = " ".repeat(barLength - bar.length);
+  const showArrow = bar.length < barLength;
+  const paddedPercent = percent.padStart(3, " ");
+  return `[${bar}${showArrow ? ">" : "="}${space}] ${paddedPercent}%`;
+};
+
 module.exports = {
   convertTZ,
   titleCase,
   prettyFileSize,
+  progressBar,
 };

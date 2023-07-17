@@ -1,5 +1,10 @@
 const fs = require("fs");
-const { convertTZ, titleCase, prettyFileSize } = require("./utils");
+const {
+  convertTZ,
+  titleCase,
+  prettyFileSize,
+  progressBar,
+} = require("./utils");
 const qs = require("qs");
 const axios = require("axios").default;
 
@@ -57,19 +62,18 @@ const getRecordingFileName = (recording, meeting) => {
 /**
  * @returns Meeting Directory (format: "Weekly Sync Meeting/2023-06-16")
  */
-const getMeetingDirectory = ({ topic, start_time, timezone }) => {
+const getMeetingDirectory = ({ id, start_time, timezone }) => {
   const ts = convertTZ(start_time, timezone).toISOString().split("T")[0];
-  const dir = topic.replace(/[^a-zA-Z0-9 ]/g, "_");
-  return `${dir}/${ts}`;
+  return `${id}/${ts}`;
 };
 
-const getFiles = (meetings) => {
+const getFiles = (meetings, parentDir = "./downloads") => {
   let total_size = 0;
   let files = [];
 
   meetings.forEach((meeting) => {
     const { recording_files } = meeting;
-    const dir = `./downloads/${getMeetingDirectory(meeting)}`;
+    const dir = `${parentDir}/${getMeetingDirectory(meeting)}`;
 
     recording_files.forEach((recording) => {
       const name = getRecordingFileName(recording, meeting);
@@ -77,6 +81,11 @@ const getFiles = (meetings) => {
       const { download_url, file_size } = recording;
 
       files.push({
+        ...meeting,
+        recording,
+        date: convertTZ(meeting.start_time, meeting.timezone)
+          .toISOString()
+          .split("T")[0],
         name,
         dir,
         path,
@@ -91,10 +100,17 @@ const getFiles = (meetings) => {
   return [files, total_size];
 };
 
+const log = (msg) => {
+  console.log(`[zoom-cloud] ${msg}`);
+};
+
 const downloadMeeetings = async (meetings) => {
   let downloadedSize = 0;
   const [files, total_size] = getFiles(meetings);
-  let lastLog = "";
+
+  log(
+    `${files.length} files (${prettyFileSize(total_size)}) queued for download.`
+  );
 
   for (let i = 0; i < files.length; i++) {
     const { name, dir, path, url, size } = files[i];
@@ -107,39 +123,33 @@ const downloadMeeetings = async (meetings) => {
 
     res.data.pipe(fs.createWriteStream(path));
 
-    let progress = 0;
-    res.data.on("data", (chunk) => {
-      progress += chunk.length;
-      downloadedSize += chunk.length;
-      const percent = ((progress * 100) / size).toFixed();
-      const totalPercent = ((downloadedSize * 100) / total_size).toFixed();
-
-      // 16% of 14.4 MB- Downloading 1/2 "Weekly Sync Meeting/2023-06-16/10-00-00 GMT-0700 (Pacific Daylight Time) - Audio Only.m4a" (32% of 7.2 MB)
-      const newLog = `${totalPercent}% of ${prettyFileSize(
+    log(
+      `${progressBar(downloadedSize / total_size)} of ${prettyFileSize(
         total_size
-      )} - Downloading ${i + 1}/${
-        files.length
-      } "${path}" (${percent}% of ${prettyFileSize(size)})`;
+      )} - Downloading ${i + 1}/${files.length} "${path}" ${prettyFileSize(
+        size
+      )}`
+    );
 
-      if (newLog !== lastLog) {
-        console.log(newLog);
-        lastLog = newLog;
-      }
-    });
+    res.data.on("data", (chunk) => (downloadedSize += chunk.length));
 
-    await new Promise((resolve) => {
-      res.data.on("end", () => {
-        console.info(`Downloaded "${path}"`);
-        resolve();
-      });
-    });
+    await new Promise((resolve) => res.data.on("end", () => resolve()));
   }
 
-  return files;
+  return [files, total_size];
+};
+
+const deleteRecording = async (meetingId, recordingId) => {
+  const res = await instance.delete(
+    `/meetings/${meetingId}/recordings/${recordingId}`
+  );
+  return res.data;
 };
 
 module.exports = {
+  log,
   authenticate,
   getRecordings,
   downloadMeeetings,
+  deleteRecording,
 };

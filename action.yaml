@@ -37,6 +37,15 @@ inputs:
     required: false
     default: "false"
 
+  gsa-credentials:
+    description: Google Service Account Credentials
+    required: true
+
+  meeting-gdrive-folder-map:
+    description: JSON Map of meeting ID to folder ID
+    required: true
+    default: "{}"
+
 outputs:
   result:
     description: The result of the action

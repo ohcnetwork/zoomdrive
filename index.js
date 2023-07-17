@@ -1,5 +1,6 @@
 const core = require("@actions/core");
 const zoom = require("./zoom");
+const { google } = require("googleapis");
 
 function getDateRange() {
   const lookbackDays = Number(core.getInput("lookback-days") || 7);
@@ -28,12 +29,51 @@ async function downloadRecordings() {
 
   const files = await zoom.downloadMeeetings(meetings);
   core.info(`Downloaded ${files.length} files`);
+
+  return files;
+}
+
+async function uploadToGoogleDrive(files) {
+  const credentials = core.getInput("gsa-credentials");
+  const folderId = core.getInput("folder-id");
+
+  const auth = new google.auth.GoogleAuth({
+    credentials: JSON.parse(credentials),
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
+
+  const drive = google.drive({ version: "v3", auth });
+
+  const promises = files.map((file) => {
+    const name = file.split("/").pop();
+    const media = {
+      mimeType: "application/octet-stream",
+      body: require("fs").createReadStream(file),
+    };
+
+    return drive.files.create({
+      requestBody: {
+        name,
+        parents: [folderId],
+      },
+      media,
+      fields: "id",
+    });
+  });
+
+  const results = await Promise.all(promises);
+  const ids = results.map((result) => result.data.id);
+
+  core.info(`Uploaded ${ids.length} files to Google Drive`);
+
+  return ids;
 }
 
 async function run() {
   try {
-    const recordings = await downloadRecordings();
-    core.setOutput("recordings", recordings);
+    const files = await downloadRecordings();
+    await uploadToGoogleDrive(files);
+    core.setOutput("recordings", files);
   } catch (error) {
     core.setFailed(error.message);
   }

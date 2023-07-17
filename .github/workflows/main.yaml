@@ -25,7 +25,7 @@ jobs:
     environment: Open Healthcare Network
     name: Download Zoom recordings and upload to Google Drive
     steps:
-      - name: ⬇ Download Meetings from Zoom Cloud
+      - name: Download Meetings from Zoom Cloud and Upload to Google Drive
         id: zoomdrive
         uses: coronasafe/zoomdrive@main
         with:
@@ -35,12 +35,10 @@ jobs:
           lookback-days: ${{ github.event.inputs.lookback-days }}
           end-date: ${{ github.event.inputs.end-date }}
           delete-on-success: ${{ github.event.inputs.delete-on-success }}
-
-      - name: ⬆ Upload Meetings to Google Drive
-        uses: adityak74/google-drive-upload-git-action@v0.3
-        with:
-          credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          filename: downloads
-          folderId: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
-          overwrite: true
-          mirrorDirectoryStructure: true
+          gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
+          gdrive-folder-id: ${{ secrets.GOOGLE_DRIVE_FOLDER_ID }}
+          meeting-folder-map: |
+            {
+              "83105532335": "1a2b3c4d5e6f7g8h9i0j",
+              "default": "1a2b3c4d5e6f7g8h9i0j
+            }

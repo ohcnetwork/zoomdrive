@@ -1,4 +1,7 @@
 const zoom = require("./zoom");
+const { google } = require("googleapis");
+const gdrive = require("./gdrive");
+const { prettyFileSize, progressBar } = require("./utils");
 
 function getDateRange() {
   const lookbackDays = 7;
@@ -19,22 +22,44 @@ async function downloadRecordings() {
   const clientSecret = process.env.ZOOM_CLIENT_SECRET;
   const [from, to] = getDateRange();
 
-  console.log("Authenticating with Zoom using OAuth");
+  zoom.log("Authenticating using OAuth");
   await zoom.authenticate(account, client, clientSecret);
 
-  console.log(
-    `Obtaining Zoom Meetings and Recordings between ${from} and ${to}`
-  );
+  zoom.log(`Obtaining Meetings and Recordings between '${from}' and '${to}'`);
   const { meetings } = await zoom.getRecordings("me", from, to);
 
-  const files = await zoom.downloadMeeetings(meetings);
-  console.log(`Downloaded ${files.length} files`);
+  const [files, total_size] = await zoom.downloadMeeetings(meetings);
+  zoom.log(
+    `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(
+      total_size
+    )}`
+  );
+
+  return [files, total_size];
+}
+
+async function syncToGoogleDrive(files, total_size) {
+  const credentials = Buffer.from(
+    process.env.GSA_CREDENTIALS,
+    "base64"
+  ).toString("utf-8");
+
+  const folderMap = { 83105532335: "1cP_OA__ay2JGzfNXN6586TxChDoOUFqE" };
+
+  gdrive.log("Authenticating using Google Service Account Credentials");
+  const auth = new google.auth.GoogleAuth({
+    credentials: JSON.parse(credentials),
+    scopes: ["https://www.googleapis.com/auth/drive"],
+  });
+
+  const drive = google.drive({ version: "v3", auth });
+  return await gdrive.syncToGoogleDrive(drive, files, total_size, folderMap);
 }
 
 async function run() {
   try {
-    const recordings = await downloadRecordings();
-    // core.setOutput("recordings", recordings);
+    const [files, total_size] = await downloadRecordings();
+    await syncToGoogleDrive(files, total_size);
   } catch (error) {
     console.error(error);
   }
