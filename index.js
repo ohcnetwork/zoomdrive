@@ -40,9 +40,10 @@ async function downloadRecordings() {
 }
 
 async function syncToGoogleDrive(files, total_size) {
-  const credentials = Buffer.from(core.getInput("gsa-credentials"), "base64")
-    .toString("utf-8")
-    .replaceAll(/\\n/g, "\n");
+  const credentials = Buffer.from(
+    core.getInput("gsa-credentials"),
+    "base64"
+  ).toString("utf-8");
 
   console.log(credentials);
   console.log("JSON Parse: ", JSON.parse(credentials));
