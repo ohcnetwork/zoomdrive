@@ -42,7 +42,7 @@ async function downloadRecordings() {
 async function syncToGoogleDrive(files, total_size) {
   const credentials = Buffer.from(core.getInput("gsa-credentials"), "base64")
     .toString("utf-8")
-    .replace(/\\n/g, "\n");
+    .replaceAll(/\\n/g, "\n");
 
   const folderMap = JSON.parse(core.getInput("meeting-gdrive-folder-map"));
 
