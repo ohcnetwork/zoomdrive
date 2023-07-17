@@ -43,6 +43,6 @@ jobs:
           gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
           meeting-gdrive-folder-map: |
             {
-              "83105532335": "1a2b3c4d5e6f7g8h9i0j",
-              "default": "1a2b3c4d5e6f7g8h9i0j"
+              "83105532335": "1cP_OA__ay2JGzfNXN6586TxChDoOUFqE",
+              "default": "10VYvpgst-PZaRVzliocRVwkGOv54sv6C"
             }
