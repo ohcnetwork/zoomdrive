@@ -41,7 +41,7 @@ jobs:
           end-date: "2023-06-28"
 
           gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          meeting-folder-map: |
+          meeting-gdrive-folder-map: |
             {
               "83105532335": "1a2b3c4d5e6f7g8h9i0j",
               "default": "1a2b3c4d5e6f7g8h9i0j
