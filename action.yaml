@@ -1,5 +1,6 @@
 name: zoomdrive
 description: GitHub action to download Zoom recordings periodically and upload to Google Drive
+author: "Open Healthcare Network"
 
 inputs:
   zoom-account-id:

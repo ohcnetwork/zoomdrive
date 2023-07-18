@@ -1,7 +1,7 @@
-const zoom = require("./zoom");
+const zoom = require("./dist/zoom");
 const { google } = require("googleapis");
-const gdrive = require("./gdrive");
-const { prettyFileSize, progressBar } = require("./utils");
+const gdrive = require("./dist/gdrive");
+const { prettyFileSize, progressBar } = require("./dist/utils");
 
 function getDateRange() {
   const lookbackDays = 7;
