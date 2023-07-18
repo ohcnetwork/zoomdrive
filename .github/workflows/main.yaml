@@ -1,23 +1,20 @@
 on:
-  push:
-    branches:
-      - main
   schedule:
-    - cron: "0 0 * * *" # Run every day at 00:00 UTC
-  # workflow_dispatch:
-  #   inputs:
-  #     lookback-days:
-  #       description: Number of days to keep Zoom meeting recordings
-  #       required: false
-  #       default: 7
-  #     end-date:
-  #       description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
-  #       required: false
-  #       default: "2023-06-28"
-  #     delete-on-success:
-  #       description: "Delete recordings after uploading to Google Drive"
-  #       required: true
-  #       default: false
+    - cron: "0 0 * * 0" # runs every Sunday at 12:00 AM UTC
+  workflow_dispatch:
+    inputs:
+      lookback-days:
+        description: Number of days to keep Zoom meeting recordings
+        required: false
+        default: 7
+      end-date:
+        description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
+        required: false
+        default: "2023-06-28"
+      delete-on-success:
+        description: "Delete recordings after uploading to Google Drive"
+        required: true
+        default: false
 
 jobs:
   zoomdrive:
@@ -33,16 +30,15 @@ jobs:
           zoom-client-id: ${{ secrets.ZOOM_CLIENT_ID }}
           zoom-client-secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
 
-          # lookback-days: ${{ github.event.inputs.lookback-days }}
-          # end-date: ${{ github.event.inputs.end-date }}
-          # delete-on-success: ${{ github.event.inputs.delete-on-success }}
-
-          lookback-days: 7
-          end-date: "2023-06-28"
+          lookback-days: ${{ github.event.inputs.lookback-days }}
+          end-date: ${{ github.event.inputs.end-date }}
+          delete-on-success: ${{ github.event.inputs.delete-on-success }}
 
           gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
           meeting-gdrive-folder-map: |
             {
-              "83105532335": "1cP_OA__ay2JGzfNXN6586TxChDoOUFqE",
-              "default": "10VYvpgst-PZaRVzliocRVwkGOv54sv6C"
+              "85188928844": "1EPacfEi42rzBk24Yjc7a6M5mdJR7iUQE",
+              "83105532335": "1TruJMh0JoizegqdAYVRhd217ZPOy49Bw",
+              "84710625619": "1R6WvRV9Oq9906ZJpkKy9kdltNSg9R-6v",
+              "default": "1AwBOj1Wt42x9TZJy1vKtD11aXicMNt_s"
             }
