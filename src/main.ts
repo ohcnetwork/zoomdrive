@@ -4,9 +4,14 @@ import {google, drive_v3} from 'googleapis'
 import {syncToGoogleDrive} from './gdrive'
 import {ZoomFile, authenticate, getRecordings, downloadMeetings} from './zoom'
 
+const envOrInput = (name: string, options?: core.InputOptions): string => {
+  const envName = `INPUT_${name.replace(/[ -]/g, '_').toUpperCase()}`
+  return process.env[envName] ?? core.getInput(name, options)
+}
+
 function getDateRange(): [string, string] {
-  const lookbackDays = Number(core.getInput('lookback-days') || 7)
-  const endDate = new Date(core.getInput('end-date') || Date.now())
+  const lookbackDays = Number(envOrInput('lookback-days') || 1)
+  const endDate = new Date(envOrInput('end-date') || Date.now())
 
   const startDate = new Date(endDate)
   startDate.setDate(startDate.getDate() - lookbackDays)
@@ -18,9 +23,9 @@ function getDateRange(): [string, string] {
 }
 
 async function downloadRecordings(): Promise<[ZoomFile[], number]> {
-  const account = core.getInput('zoom-account-id')
-  const client = core.getInput('zoom-client-id')
-  const clientSecret = core.getInput('zoom-client-secret')
+  const account = envOrInput('zoom-account-id', {required: true})
+  const client = envOrInput('zoom-client-id', {required: true})
+  const clientSecret = envOrInput('zoom-client-secret', {required: true})
   const [from, to] = getDateRange()
 
   await authenticate(account, client, clientSecret)
@@ -34,11 +39,11 @@ async function authAndSyncToGoogleDrive(
   files: ZoomFile[],
   total_size: number
 ): Promise<drive_v3.Schema$File[]> {
-  const credentials = Buffer.from(core.getInput('gsa-credentials'), 'base64').toString(
+  const credentials = Buffer.from(envOrInput('gsa-credentials'), 'base64').toString(
     'utf-8'
   )
 
-  const folderMap = JSON.parse(core.getInput('meeting-gdrive-folder-map'))
+  const folderMap = JSON.parse(envOrInput('meeting-gdrive-folder-map'))
 
   const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(credentials),

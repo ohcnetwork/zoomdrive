@@ -32,7 +32,7 @@ export async function syncToGoogleDrive(
   total_size: number,
   meetingFolderMap: {[key: string]: string | false}
 ): Promise<drive_v3.Schema$File[]> {
-  // Skip files that have been marked as false
+  // Skip meetings that have been marked as false
   files = files.filter(file => meetingFolderMap[file.id] !== false)
 
   const responses = []
