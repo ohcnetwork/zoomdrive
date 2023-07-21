@@ -40,10 +40,4 @@ jobs:
           delete_on_success: ${{ github.event.inputs.delete_on_success }}
 
           gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          meeting_gdrive_folder_map: |
-            {
-              "85188928844": "1EPacfEi42rzBk24Yjc7a6M5mdJR7iUQE",
-              "83105532335": "1TruJMh0JoizegqdAYVRhd217ZPOy49Bw",
-              "84710625619": "1R6WvRV9Oq9906ZJpkKy9kdltNSg9R-6v",
-              "default": "1AwBOj1Wt42x9TZJy1vKtD11aXicMNt_s"
-            }
+          meeting_gdrive_folder_map: ${{ secrets.MEETING_GDRIVE_FOLDER_MAP }}

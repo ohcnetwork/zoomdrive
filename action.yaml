@@ -34,9 +34,8 @@ inputs:
     required: true
 
   meeting_gdrive_folder_map:
-    description: JSON Map of meeting ID to folder ID
+    description: Base64 encoded JSON Map of meeting ID to folder ID
     required: true
-    default: '{}'
 
 outputs:
   result:

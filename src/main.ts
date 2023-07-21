@@ -45,7 +45,11 @@ async function authAndSyncToGoogleDrive(
     'utf-8'
   )
 
-  const folderMap = JSON.parse(core.getInput('meeting_gdrive_folder_map'))
+  const base64FolderMap = core.getInput('meeting_gdrive_folder_map')
+
+  const folderMap = base64FolderMap
+    ? JSON.parse(Buffer.from(base64FolderMap, 'base64').toString('utf-8'))
+    : {}
 
   const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(credentials),
