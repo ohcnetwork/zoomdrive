@@ -30,8 +30,8 @@ jobs:
           zoom_client_id: ${{ secrets.ZOOM_CLIENT_ID }}
           zoom_client_secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
 
-          lookback_days: ${{ github.event.inputs.lookback_days || "7" }}
-          end_date: ${{ github.event.inputs.end_date || "2023-06-28" }}
+          lookback_days: ${{ github.event.inputs.lookback_days }}
+          end_date: ${{ github.event.inputs.end_date }}
           delete_on_success: ${{ github.event.inputs.delete_on_success || false }}
 
           gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
