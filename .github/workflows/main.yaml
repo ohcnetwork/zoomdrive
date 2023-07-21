@@ -18,7 +18,7 @@ on:
         default: '2023-06-28'
       delete_on_success:
         description: 'Delete recordings after uploading to Google Drive'
-        required: true
+        required: false
         default: false
 
 jobs:
