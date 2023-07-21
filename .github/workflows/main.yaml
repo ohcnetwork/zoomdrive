@@ -27,6 +27,9 @@ jobs:
     environment: Open Healthcare Network
     name: Download Zoom recordings and upload to Google Drive
     steps:
+      - uses: actions/setup-node@v3
+        with:
+          node-version: 18
       - name: Download Meetings from Zoom Cloud and Upload to Google Drive
         id: zoomdrive
         uses: coronasafe/zoomdrive@main
