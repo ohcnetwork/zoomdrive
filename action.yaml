@@ -1,51 +1,41 @@
 name: zoomdrive
 description: GitHub action to download Zoom recordings periodically and upload to Google Drive
-author: "Open Healthcare Network"
+author: 'Open Healthcare Network'
 
 inputs:
-  zoom-account-id:
+  zoom_account_id:
     description: Zoom Account ID
     required: true
 
-  zoom-client-id:
+  zoom_client_id:
     description: Client ID of Zoom OAuth App
     required: true
 
-  zoom-client-secret:
+  zoom_client_secret:
     description: Client Secret of Zoom OAuth App
     required: true
 
-  zoom-user-id:
-    description: Zoom User ID
-    required: false
-    default: me
-
-  meeting-id:
-    description: Zoom Meeting ID
-    required: false
-
-  lookback-days:
+  lookback_days:
     description: Number of days to keep Zoom meeting recordings
     required: false
-    default: "7"
+    default: '30'
 
-  end-date:
+  end_date:
     description: End date of Zoom meeting recordings to keep
     required: false
 
-  delete-on-success:
-    description: Delete Zoom files after uploading to Google Drive
+  delete_on_success:
+    description: Delete Zoom Meeting Recording files after uploading to Google Drive
     required: false
-    default: "false"
+    default: 'false'
 
-  gsa-credentials:
+  gsa_credentials:
     description: Google Service Account Credentials
     required: true
 
-  meeting-gdrive-folder-map:
-    description: JSON Map of meeting ID to folder ID
+  meeting_gdrive_folder_map:
+    description: Base64 encoded JSON Map of meeting ID to folder ID
     required: true
-    default: "{}"
 
 outputs:
   result:
@@ -54,3 +44,4 @@ outputs:
 runs:
   using: node16
   main: dist/index.js
+  post: rm -rf ./downloads

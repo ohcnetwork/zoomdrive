@@ -30,9 +30,10 @@ export async function syncToGoogleDrive(
   drive: drive_v3.Drive,
   files: ZoomFile[],
   total_size: number,
-  meetingFolderMap: {[key: string]: string | false}
+  meetingFolderMap: {[key: string]: string | false},
+  onSuccess: (file: ZoomFile) => void
 ): Promise<drive_v3.Schema$File[]> {
-  // Skip files that have been marked as false
+  // Skip meetings that have been marked as false
   files = files.filter(file => meetingFolderMap[file.id] !== false)
 
   const responses = []
@@ -95,6 +96,8 @@ export async function syncToGoogleDrive(
 
     uploadedSize += file.recording.file_size
     responses.push(res as drive_v3.Schema$File)
+
+    onSuccess(file)
   }
 
   log(

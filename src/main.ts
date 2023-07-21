@@ -2,11 +2,17 @@ import * as core from '@actions/core'
 import {google, drive_v3} from 'googleapis'
 
 import {syncToGoogleDrive} from './gdrive'
-import {ZoomFile, authenticate, getRecordings, downloadMeetings} from './zoom'
+import {
+  ZoomFile,
+  authenticate,
+  getRecordings,
+  downloadMeetings,
+  deleteRecording,
+} from './zoom'
 
 function getDateRange(): [string, string] {
-  const lookbackDays = Number(core.getInput('lookback-days') || 7)
-  const endDate = new Date(core.getInput('end-date') || Date.now())
+  const lookbackDays = Number(core.getInput('lookback_days') || 1)
+  const endDate = new Date(core.getInput('end_date') || Date.now())
 
   const startDate = new Date(endDate)
   startDate.setDate(startDate.getDate() - lookbackDays)
@@ -18,9 +24,9 @@ function getDateRange(): [string, string] {
 }
 
 async function downloadRecordings(): Promise<[ZoomFile[], number]> {
-  const account = core.getInput('zoom-account-id')
-  const client = core.getInput('zoom-client-id')
-  const clientSecret = core.getInput('zoom-client-secret')
+  const account = core.getInput('zoom_account_id', {required: true})
+  const client = core.getInput('zoom_client_id', {required: true})
+  const clientSecret = core.getInput('zoom_client_secret', {required: true})
   const [from, to] = getDateRange()
 
   await authenticate(account, client, clientSecret)
@@ -34,11 +40,16 @@ async function authAndSyncToGoogleDrive(
   files: ZoomFile[],
   total_size: number
 ): Promise<drive_v3.Schema$File[]> {
-  const credentials = Buffer.from(core.getInput('gsa-credentials'), 'base64').toString(
+  const deleteOnSuccess = core.getBooleanInput('delete_on_success')
+  const credentials = Buffer.from(core.getInput('gsa_credentials'), 'base64').toString(
     'utf-8'
   )
 
-  const folderMap = JSON.parse(core.getInput('meeting-gdrive-folder-map'))
+  const base64FolderMap = core.getInput('meeting_gdrive_folder_map')
+
+  const folderMap = base64FolderMap
+    ? JSON.parse(Buffer.from(base64FolderMap, 'base64').toString('utf-8'))
+    : {}
 
   const auth = new google.auth.GoogleAuth({
     credentials: JSON.parse(credentials),
@@ -46,7 +57,11 @@ async function authAndSyncToGoogleDrive(
   })
 
   const drive = google.drive({version: 'v3', auth})
-  return await syncToGoogleDrive(drive, files, total_size, folderMap)
+  return await syncToGoogleDrive(drive, files, total_size, folderMap, async file => {
+    if (deleteOnSuccess) {
+      await deleteRecording(file.uuid, file.recording.id)
+    }
+  })
 }
 
 async function run(): Promise<void> {
