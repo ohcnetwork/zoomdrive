@@ -26,10 +26,12 @@ export interface ZoomMeeting {
   recording_files: ZoomRecording[]
   start_time: string
   id: string
+  uuid: string
   topic: string
 }
 
 export interface ZoomFile {
+  uuid: string
   id: string
   name: string
   dir: string

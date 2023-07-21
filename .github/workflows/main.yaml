@@ -5,19 +5,19 @@ on:
     branches:
       - main
   schedule:
-    - cron: "0 0 * * 0" # runs every Sunday at 12:00 AM UTC
+    - cron: '0 0 * * 0' # runs every Sunday at 12:00 AM UTC
   workflow_dispatch:
     inputs:
-      lookback-days:
+      lookback_days:
         description: Number of days to keep Zoom meeting recordings
         required: false
         default: 7
-      end-date:
+      end_date:
         description: End date of Zoom meeting recordings to keep (YYYY-MM-DD)
         required: false
-        default: "2023-06-28"
-      delete-on-success:
-        description: "Delete recordings after uploading to Google Drive"
+        default: '2023-06-28'
+      delete_on_success:
+        description: 'Delete recordings after uploading to Google Drive'
         required: true
         default: false
 
@@ -31,16 +31,16 @@ jobs:
         id: zoomdrive
         uses: coronasafe/zoomdrive@main
         with:
-          zoom-account-id: ${{ secrets.ZOOM_ACCOUNT_ID }}
-          zoom-client-id: ${{ secrets.ZOOM_CLIENT_ID }}
-          zoom-client-secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
+          zoom_account_id: ${{ secrets.ZOOM_ACCOUNT_ID }}
+          zoom_client_id: ${{ secrets.ZOOM_CLIENT_ID }}
+          zoom_client_secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
 
-          lookback-days: ${{ github.event.inputs.lookback-days }}
-          end-date: ${{ github.event.inputs.end-date }}
-          delete-on-success: ${{ github.event.inputs.delete-on-success }}
+          lookback_days: ${{ github.event.inputs.lookback_days }}
+          end_date: ${{ github.event.inputs.end_date }}
+          delete_on_success: ${{ github.event.inputs.delete_on_success }}
 
-          gsa-credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          meeting-gdrive-folder-map: |
+          gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
+          meeting_gdrive_folder_map: |
             {
               "85188928844": "1EPacfEi42rzBk24Yjc7a6M5mdJR7iUQE",
               "83105532335": "1TruJMh0JoizegqdAYVRhd217ZPOy49Bw",
