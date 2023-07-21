@@ -59,7 +59,13 @@ export async function syncToGoogleDrive(
         )} - Creating subfolder "${file.date}" for meeting "${file.topic}" (${file.id})`
       )
 
-      const driveFolderId = await createFolder(drive, file.date, folderId)
+      const driveFolderId = await createFolder(
+        drive,
+        meetingFolderMap[file.id]
+          ? file.date
+          : `${file.date} - ${file.topic} (${file.id})`,
+        folderId
+      )
       if (driveFolderId) {
         subFoldersLookup[lookupId] = driveFolderId
       } else {
