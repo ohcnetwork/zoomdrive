@@ -18,7 +18,7 @@ export interface ZoomRecording {
   recording_end: string
   recording_start: string
   recording_type: string
-  status: 'completed'
+  status: 'completed' | 'processing' | 'recording' | 'failed'
 }
 
 export interface ZoomMeeting {
@@ -134,6 +134,10 @@ const getFiles = (
     const dir = `${parentDir}/${getMeetingDirectory(meeting)}`
 
     for (const recording of recording_files) {
+      if (recording.status !== 'completed') {
+        continue
+      }
+
       const name = getRecordingFileName(recording, meeting)
       const path = `${dir}/${name}`
       const {download_url, file_size} = recording
@@ -188,9 +192,11 @@ export const downloadMeetings = async (
     await new Promise<void>(resolve => res.data.on('end', () => resolve()))
   }
 
-  log(
-    `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(total_size)}`
-  )
+  if (total_size) {
+    log(
+      `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(total_size)}`
+    )
+  }
 
   return [files, total_size]
 }

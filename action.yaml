@@ -44,4 +44,4 @@ outputs:
 runs:
   using: node16
   main: dist/index.js
-  post: rm -rf ./downloads
+  post: rm -rf ./downloads || true

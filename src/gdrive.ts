@@ -100,9 +100,11 @@ export async function syncToGoogleDrive(
     onSuccess(file)
   }
 
-  log(
-    `${progressBar(1)} - Upload complete. Total size: ${prettyFileSize(uploadedSize)}`
-  )
+  if (uploadedSize) {
+    log(
+      `${progressBar(1)} - Upload complete. Total size: ${prettyFileSize(uploadedSize)}`
+    )
+  }
 
   return responses
 }

@@ -2,7 +2,7 @@
 . "$(dirname -- "$0")/_/husky.sh"
 
 # Check if there are any differences in the ./src directory
-if git diff --quiet --exit-code ./src; then
+if git diff --quiet --exit-code -- ./src && git diff --quiet --exit-code --cached -- ./src; then
   echo "No differences found in ./src directory. Skipping pnpm all."
 else
   echo "Changes found in ./src directory. Running pnpm all..."
