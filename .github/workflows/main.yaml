@@ -37,7 +37,7 @@ jobs:
 
           lookback_days: ${{ github.event.inputs.lookback_days }}
           end_date: ${{ github.event.inputs.end_date }}
-          delete_on_success: ${{ github.event.inputs.delete_on_success }}
+          delete_on_success: ${{ github.event.inputs.delete_on_success || false }}
 
           gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
           meeting_gdrive_folder_map: ${{ secrets.MEETING_GDRIVE_FOLDER_MAP }}
