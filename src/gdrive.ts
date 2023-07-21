@@ -44,7 +44,11 @@ export async function syncToGoogleDrive(
     const file = files[i]
     const folderId = meetingFolderMap[file.id] ?? meetingFolderMap['default']
 
-    if (!folderId) {
+    if (folderId === false) {
+      continue
+    }
+
+    if (folderId === undefined) {
       throw new Error(
         `No folder ID found for meeting ${file.id} (${file.topic}) nor a default folder ID provided.`
       )
