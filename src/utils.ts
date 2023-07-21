@@ -4,12 +4,12 @@
  * convertTZ("2012/04/20 10:10:30 +0000", "Asia/Jakarta") // Tue Apr 20 2012 17:10:30 GMT+0700 (Western Indonesia Time)
  * ```
  *
- * Reference: https://stackoverflow.com/a/54127122/7887936
+ * A modified version from: https://stackoverflow.com/a/54127122/7887936
  */
 export function convertTZ(date: Date | string, tzString: string): Date {
   return new Date(
     (typeof date === 'string' ? new Date(date) : date).toLocaleString('en-US', {
-      timeZone: tzString,
+      timeZone: tzString || undefined,
     })
   )
 }

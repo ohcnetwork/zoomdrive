@@ -59,7 +59,7 @@ async function authAndSyncToGoogleDrive(
   const drive = google.drive({version: 'v3', auth})
   return await syncToGoogleDrive(drive, files, total_size, folderMap, async file => {
     if (deleteOnSuccess) {
-      await deleteRecording(file.uuid, file.recording.id)
+      await deleteRecording(file)
     }
   })
 }

@@ -118,6 +118,7 @@ export const getRecordingFileName = (
  * @returns Meeting Directory (format: "Weekly Sync Meeting/2023-06-16")
  */
 const getMeetingDirectory = ({id, start_time, timezone}: ZoomMeeting): string => {
+  log(`Getting meeting directory for ${id}, timezone: ${timezone}`)
   const ts = convertTZ(start_time, timezone).toISOString().split('T')[0]
   return `${id}/${ts}`
 }
@@ -201,10 +202,10 @@ export const downloadMeetings = async (
   return [files, total_size]
 }
 
-export const deleteRecording = async (
-  meetingId: string,
-  recordingId: string
-): Promise<{}> => {
-  const res = await instance.delete(`/meetings/${meetingId}/recordings/${recordingId}`)
+export const deleteRecording = async (file: ZoomFile): Promise<{}> => {
+  log(`Deleting recording ${file.recording.id} of meeting ${file.id}`)
+  const res = await instance.delete(
+    `/meetings/${file.uuid}/recordings/${file.recording.id}`
+  )
   return res.data
 }
