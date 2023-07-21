@@ -45,5 +45,4 @@ outputs:
 runs:
   using: node16
   main: dist/index.js
-  pre: node --version
   post: rm -rf ./downloads
