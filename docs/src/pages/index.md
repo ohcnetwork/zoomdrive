@@ -1,6 +1,6 @@
 ---
 title: Getting started
-pageTitle: ZoomDrive - Transfer Zooom recordings to Google Drive
+pageTitle: ZoomDrive - Sync Zooom recordings to Google Drive
 description: A GitHub Action to sync Zoom recordings to Google Drive or other cloud storages of your choice.
 ---
 
@@ -84,7 +84,8 @@ jobs:
           zoom_client_id: ${{ secrets.ZOOM_CLIENT_ID }}
           zoom_client_secret: ${{ secrets.ZOOM_CLIENT_SECRET }}
           gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          folder_map: ${{ secrets.GDRIVE_FOLDER_MAP }}
+          meeting_gdrive_folder_map: ${{ secrets.GDRIVE_FOLDER_MAP }}
+          delete_on_success: true
 ```
 
 ### Configure Repository Environment Secrets
@@ -97,6 +98,8 @@ You'll need to create an environment and add the below secrets to the environmen
 - `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS`: The Google Service Account Credentials
 - `GDRIVE_FOLDER_MAP`: A base64 encoded JSON object containing the mapping of Zoom Meeting IDs to Google Drive folder IDs
 
+#### Google Service Account Credentials
+
 The `GOOGLE_SERVICE_ACCOUNT_CREDENTIALS` secret is the base64 encoded contents of the JSON key file downloaded from Google Cloud Console. You can encode the file using the following command:
 
 ```shell
@@ -107,12 +110,16 @@ base64 -w 0 <path-to-gsa-credentials.json>
 base64 -i <path-to-gsa-credentials.json>
 ```
 
-The `GDRIVE_FOLDER_MAP` secret is a base64 encoded JSON object containing the mapping of Zoom Meeting IDs to Google Drive folder IDs. The JSON object should be of the following format:
+#### Zoom Meeting ID to Google Drive Folder ID Mapping
+
+The `GDRIVE_FOLDER_MAP` secret is a base64 encoded JSON object containing the mapping of Zoom Meeting IDs to Google Drive folder IDs. The JSON object should have a `default` property which is the Google Drive folder ID to use when a meeting ID is not found in the object. The `default` property is mandatory. You can also set the value of a meeting ID or the `default` property to `false` to skip syncing for that meeting. See the example below:
 
 ```json
 {
-  "meeting-id-1": "folder-id-1",
-  "meeting-id-2": "folder-id-2"
+  "85177928324": "1E***********7iUQE",
+  "83123232335": "1T***********y49Bw",
+  "84898985619": false, // skips syncing for this meeting
+  "default": "1T***********y41Bw"
 }
 ```
 
@@ -120,10 +127,10 @@ You can encode the JSON object using the following command:
 
 ```shell
 # on linux
-base64 -w 0 <<< '{"meeting-id-1":"folder-id-1","meeting-id-2":"folder-id-2"}'
+base64 -w 0 ./folder-map.json
 
 # on mac
-base64 -i <<< '{"meeting-id-1":"folder-id-1","meeting-id-2":"folder-id-2"}'
+base64 -i ./folder-map.json
 ```
 
 ### Configure the workflow schedule

@@ -10,6 +10,7 @@ import { Navigation } from '@/components/Navigation'
 import { Prose } from '@/components/Prose'
 import { Search } from '@/components/Search'
 import { ThemeSelector } from '@/components/ThemeSelector'
+import { GITHUB_URL } from '@/constants'
 
 export const navigation = [
   {
@@ -19,27 +20,24 @@ export const navigation = [
       { title: 'Usage', href: '/docs/usage' },
     ],
   },
-  {
-    title: 'Bring your own cloud storage',
-    links: [
-      { title: 'Sync to anywhere', href: '/docs/upload-to-anywhere' },
-      {
-        title: 'Sync to Amazon S3',
-        href: '/docs/upload-to-s3',
-      },
-      { title: 'Sync to Google Drive', href: '/docs/upload-to-google-drive' },
-      {
-        title: 'Sync to Microsoft OneDrive',
-        href: '/docs/upload-to-onedrive',
-      },
-    ],
-  },
+  // {
+  //   title: 'Bring your own cloud storage',
+  //   links: [
+  //     { title: 'Sync to anywhere', href: '/docs/sync-to-anywhere' },
+  //     {
+  //       title: 'Sync to Amazon S3',
+  //       href: '/docs/upload-to-s3',
+  //     },
+  //     { title: 'Sync to Google Drive', href: '/docs/sync-to-google-drive' },
+  //     {
+  //       title: 'Sync to Microsoft OneDrive',
+  //       href: '/docs/sync-to-onedrive',
+  //     },
+  //   ],
+  // },
   {
     title: 'Contributing',
-    links: [
-      { title: 'How to contribute', href: '/docs/how-to-contribute' },
-      { title: 'About the project', href: '/docs/about' },
-    ],
+    links: [{ title: 'About the project', href: '/docs/about' }],
   },
 ]
 
@@ -88,7 +86,7 @@ function Header({ navigation }) {
       <div className="relative flex basis-0 justify-end gap-6 sm:gap-8 md:flex-grow">
         <ThemeSelector className="relative z-10" />
         <Link
-          href={process.env.NEXT_PUBLIC_GITHUB_URL}
+          href={GITHUB_URL}
           className="group"
           aria-label="GitHub Repository"
         >

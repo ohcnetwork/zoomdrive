@@ -7,6 +7,7 @@ import { Button } from '@/components/Button'
 import { HeroBackground } from '@/components/HeroBackground'
 import blurCyanImage from '@/images/blur-cyan.png'
 import blurIndigoImage from '@/images/blur-indigo.png'
+import { GITHUB_MARKETPLACE_URL } from '@/constants'
 
 const codeLanguage = 'yaml'
 const code = `on:
@@ -24,12 +25,9 @@ jobs:
           zoom_client_id: \${{ secrets.ZOOM_CLIENT_ID }}
           zoom_client_secret: \${{ secrets.ZOOM_CLIENT_SECRET }}
           gsa_credentials: \${{ secrets.GSA_CREDENTIALS }}
-          folder_map: \${{ secrets.GDRIVE_FOLDER_MAP }}`
+          meeting_gdrive_folder_map: \${{ secrets.MEETING_GDRIVE_FOLDER_MAP }}`
 
-const tabs = [
-  { name: '.github/workflows/zoomdrive.yaml', isActive: true },
-  { name: 'folder_map.json', isActive: false },
-]
+const tabs = [{ name: '.github/workflows/zoomdrive.yaml', isActive: true }]
 
 function TrafficLightsIcon(props) {
   return (
@@ -65,9 +63,8 @@ export function Hero() {
                 recordings to Google Drive.
               </p>
               <div className="mt-8 flex gap-4 md:justify-center lg:justify-start">
-                <Button href="/">Get started</Button>
                 <Button
-                  href={process.env.NEXT_PUBLIC_GITHUB_MARKETPLACE_URL}
+                  href={GITHUB_MARKETPLACE_URL}
                   target="_blank"
                   rel="noopener noreferrer"
                   variant="secondary"
