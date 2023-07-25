@@ -47,10 +47,6 @@ Once the service account is created, download the JSON key file. You'll need thi
 
 Share the Google Drive folder(s) with the service account email address. This is required for ZoomDrive to be able to upload recordings to Google Drive. You can create multiple folders each for a unique Zoom Meeting ID or a single folder for all recordings.
 
-{% callout title="You should know!" %}
-This is what a disclaimer message looks like. You might want to include inline `code` in it. Or maybe you’ll want to include a [link](/) in it. I don’t think we should get too carried away with other scenarios like lists or tables — that would be silly.
-{% /callout %}
-
 ---
 
 ## Setting up ZoomDrive
