@@ -22,7 +22,7 @@ _See [here](https://zoomdrive.ohc.network/#pre-requisites) for more info._
 
 ## Inputs
 
-Various inputs are defined in [`action.yml`](action.yml) to let you configure the zoomdrive action:
+Various inputs are defined in [`.github/workflows/main.yaml`](/.github/workflows/main.yaml) to let you configure the zoomdrive action:
 
 | Name                        | Description                                                                                                                                                                                   | Default               |
 |-----------------------------|-----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|-----------------------|
