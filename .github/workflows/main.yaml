@@ -14,7 +14,7 @@ on:
       delete_on_success:
         description: 'Delete recordings after uploading to Google Drive'
         required: false
-        default: false
+        default: 'false'
 
 jobs:
   zoomdrive:
@@ -24,7 +24,7 @@ jobs:
     steps:
       - name: Download Meetings from Zoom Cloud and Upload to Google Drive
         id: zoomdrive
-        uses: coronasafe/zoomdrive@main
+        uses: coronasafe/zoomdrive@v2
         with:
           zoom_account_id: ${{ secrets.ZOOM_ACCOUNT_ID }}
           zoom_client_id: ${{ secrets.ZOOM_CLIENT_ID }}
@@ -34,5 +34,5 @@ jobs:
           end_date: ${{ github.event.inputs.end_date }}
           delete_on_success: ${{ github.event.inputs.delete_on_success || true }}
 
-          gsa_credentials: ${{ secrets.GOOGLE_SERVICE_ACCOUNT_CREDENTIALS }}
-          meeting_gdrive_folder_map: ${{ secrets.MEETING_GDRIVE_FOLDER_MAP }}
+          rclone_config: ${{ secrets.RCLONE_CONFIG }}
+          folder_map: ${{ secrets.FOLDER_MAP }}
