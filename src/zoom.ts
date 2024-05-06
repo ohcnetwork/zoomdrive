@@ -53,8 +53,14 @@ let instance = axios.create({
   baseURL: ZOOM_API_SERVER,
 })
 
-const log = (msg: string): void => {
-  core.debug(`[zoom-cloud] ${msg}`)
+const log = (msg: string, level: 'debug' | 'info' | 'error' = 'info'): void => {
+  if (level === 'debug') {
+    core.debug(`[zoom-cloud] ${msg}`)
+  } else if (level === 'error') {
+    core.error(`[zoom-cloud] ${msg}`)
+  } else {
+    core.info(`[zoom-cloud] ${msg}`)
+  }
 }
 
 export const authenticate = async (
@@ -62,7 +68,7 @@ export const authenticate = async (
   client_id: string,
   client_secret: string
 ): Promise<string> => {
-  log('Authenticating using OAuth')
+  log('Authenticating using OAuth', 'debug')
   const credentials = Buffer.from(`${client_id}:${client_secret}`)
 
   const res = await axios.post(
@@ -92,7 +98,7 @@ export const getRecordings = async (
   from: string,
   to: string
 ): Promise<MeetingsResponse> => {
-  log(`Obtaining Meetings and Recordings between '${from}' and '${to}'`)
+  log(`Obtaining Meetings and Recordings between '${from}' and '${to}'`, 'debug')
   const res = await instance.get(
     `/users/${user_id}/recordings?page_size=100&from=${from}&to=${to}`
   )
@@ -118,7 +124,7 @@ export const getRecordingFileName = (
  * @returns Meeting Directory (format: "Weekly Sync Meeting/2023-06-16")
  */
 const getMeetingDirectory = ({id, start_time, timezone}: ZoomMeeting): string => {
-  log(`Getting meeting directory for ${id}, timezone: ${timezone}`)
+  log(`Getting meeting directory for ${id}, timezone: ${timezone}`, 'debug')
   const ts = convertTZ(start_time, timezone).toISOString().split('T')[0]
   return `${id}/${ts}`
 }
@@ -169,7 +175,10 @@ export const downloadMeetings = async (
   let downloadedSize = 0
   const [files, total_size] = getFiles(meetings)
 
-  log(`${files.length} files (${prettyFileSize(total_size)}) queued for download.`)
+  log(
+    `${files.length} files (${prettyFileSize(total_size)}) queued for download.`,
+    'debug'
+  )
 
   for (let i = 0; i < files.length; i++) {
     const {dir, path, url, size} = files[i]
@@ -185,7 +194,8 @@ export const downloadMeetings = async (
     log(
       `${progressBar(downloadedSize / total_size)} of ${prettyFileSize(
         total_size
-      )} - Downloading ${i + 1}/${files.length} "${path}" ${prettyFileSize(size)}`
+      )} - Downloading ${i + 1}/${files.length} "${path}" ${prettyFileSize(size)}`,
+      'info'
     )
 
     res.data.on('data', (chunk: {length: number}) => (downloadedSize += chunk.length))
@@ -195,7 +205,10 @@ export const downloadMeetings = async (
 
   if (total_size) {
     log(
-      `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(total_size)}`
+      `${progressBar(1)} - Download complete. Total size: ${prettyFileSize(
+        total_size
+      )}`,
+      'info'
     )
   }
 
@@ -203,7 +216,7 @@ export const downloadMeetings = async (
 }
 
 export const deleteRecording = async (file: ZoomFile): Promise<{}> => {
-  log(`Deleting recording ${file.recording.id} of meeting ${file.id}`)
+  log(`Deleting recording ${file.recording.id} of meeting ${file.id}`, 'debug')
   const res = await instance.delete(
     `/meetings/${file.uuid}/recordings/${file.recording.id}`
   )

@@ -32,11 +32,11 @@ inputs:
     required: false
     default: 'false'
 
-  gsa_credentials:
-    description: Google Service Account Credentials
+  rclone_config:
+    description: Base64 encoded rclone configuration file
     required: true
 
-  meeting_gdrive_folder_map:
+  folder_map:
     description: Base64 encoded JSON Map of meeting ID to folder ID
     required: true
 
@@ -45,6 +45,14 @@ outputs:
     description: The result of the action
 
 runs:
-  using: node16
-  main: dist/index.js
-  post: cleanup.js
+  using: docker
+  image: Dockerfile 
+  args:
+    - ${{ inputs.zoom_account_id }}
+    - ${{ inputs.zoom_client_id }}
+    - ${{ inputs.zoom_client_secret }}
+    - ${{ inputs.lookback_days }}
+    - ${{ inputs.end_date }}
+    - ${{ inputs.delete_on_success }}
+    - ${{ inputs.rclone_config }}
+    - ${{ inputs.folder_map }}

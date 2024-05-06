@@ -1,7 +1,5 @@
 import * as core from '@actions/core'
-import {google, drive_v3} from 'googleapis'
 
-import {syncToGoogleDrive} from './gdrive'
 import {
   ZoomFile,
   authenticate,
@@ -9,6 +7,9 @@ import {
   downloadMeetings,
   deleteRecording,
 } from './zoom'
+import {init, sync} from './rclone'
+import {rmSync} from 'fs'
+import path from 'path'
 
 function getDateRange(): [string, string] {
   const lookbackDays = Number(core.getInput('lookback_days') || 1)
@@ -36,44 +37,34 @@ async function downloadRecordings(): Promise<[ZoomFile[], number]> {
   return await downloadMeetings(meetings)
 }
 
-async function authAndSyncToGoogleDrive(
-  files: ZoomFile[],
-  total_size: number
-): Promise<drive_v3.Schema$File[]> {
-  const deleteOnSuccess = core.getBooleanInput('delete_on_success')
-  const credentials = Buffer.from(core.getInput('gsa_credentials'), 'base64').toString(
-    'utf-8'
-  )
-
-  const base64FolderMap = core.getInput('meeting_gdrive_folder_map')
-
-  const folderMap = base64FolderMap
-    ? JSON.parse(Buffer.from(base64FolderMap, 'base64').toString('utf-8'))
-    : {}
-
-  const auth = new google.auth.GoogleAuth({
-    credentials: JSON.parse(credentials),
-    scopes: ['https://www.googleapis.com/auth/drive'],
-  })
-
-  const drive = google.drive({version: 'v3', auth})
-  return await syncToGoogleDrive(drive, files, total_size, folderMap, async file => {
-    if (deleteOnSuccess) {
-      await deleteRecording(file)
-    }
-  })
-}
-
 async function run(): Promise<void> {
   try {
-    const [files, total_size] = await downloadRecordings()
-    await authAndSyncToGoogleDrive(files, total_size)
+    // TODO: Upload file using rclone copyurl without downloading it locally
+    const [files, totalSize] = await downloadRecordings()
+    const deleteOnSuccess = core.getBooleanInput('delete_on_success')
+    const folderMap = JSON.parse(
+      Buffer.from(core.getInput('folder_map'), 'base64').toString() || '{}'
+    )
+    const rcloneConfig = Buffer.from(
+      core.getInput('rclone_config'),
+      'base64'
+    ).toString()
+
+    init(rcloneConfig)
+
+    sync(files, totalSize, folderMap, file => {
+      if (deleteOnSuccess) {
+        deleteRecording(file)
+      }
+    })
 
     core.setOutput('recordings', files)
   } catch (error) {
     if (error instanceof Error) {
       core.setFailed(error.message)
     }
+  } finally {
+    rmSync(path.join(__dirname, 'downloads'), {recursive: true, force: true})
   }
 }
 
